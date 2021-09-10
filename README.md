@@ -21,5 +21,3 @@ RF01. Disparar email para novos usuários, recuperação de senha e novas aposta
      RF05. CRUD de apostas
 
 Observação: deve-se construir uma collection no insomnia para ser compartilhado.
-
-Após finalizar, notifique seu líder.
