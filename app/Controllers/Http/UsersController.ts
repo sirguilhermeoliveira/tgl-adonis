@@ -1,5 +1,6 @@
 import { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import User from "App/Models/User";
+import Mail from "@ioc:Adonis/Addons/Mail";
 
 export default class UsersController {
   public async index({ response }: HttpContextContract) {
@@ -7,24 +8,20 @@ export default class UsersController {
     return response.json(users);
   }
 
-  /*   public async store({ request }: HttpContextContract) {
-    console.log(request);
-    const data = request.only(["username", "email", "password"]);
-    console.log(data);
-    const user = await User.create(data);
-    return user;
-  } */
-
   public async store({ request, response }: HttpContextContract) {
     const { username, email, password } = request.all();
     const user = new User();
     user.username = username;
     user.email = email;
     user.password = password;
-    console.log(user);
-    console.log(request);
-    console.log(response);
     await user.save();
+    await Mail.send((message) => {
+      message
+        .to(user.email)
+        .from("sirguilhermeoliveira@gmail.com")
+        .subject("New Account")
+        .htmlView("emails/new_users");
+    });
     return response.json(user.$isPersisted);
   }
 

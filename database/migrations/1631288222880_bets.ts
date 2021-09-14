@@ -7,11 +7,20 @@ export default class Bets extends BaseSchema {
     this.schema.createTable(this.tableName, (table) => {
       table.increments("id").primary();
       table
-        .integer("game_id", 255)
+        .integer("user_id")
         .unsigned()
-        .references("games.id")
+        .notNullable()
+        .references("users.id")
+        .onUpdate("CASCADE")
         .onDelete("CASCADE");
-      table.string("game_numbers", 255).notNullable();
+      table
+        .integer("game_id")
+        .unsigned()
+        .notNullable()
+        .references("games.id")
+        .onDelete("CASCADE")
+        .onDelete("CASCADE");
+      table.string("game_numbers").notNullable();
       table.timestamp("created_at", { useTz: true });
       table.timestamp("updated_at", { useTz: true });
     });
