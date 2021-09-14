@@ -9,6 +9,7 @@
   },
   "devDependencies": {
     "@adonisjs/assembler": "^5.0.0",
+    "@types/jsonwebtoken": "^8.5.5",
     "adonis-preset-ts": "^2.1.0",
     "pino-pretty": "^6.0.0",
     "typescript": "~4.2",
@@ -16,9 +17,14 @@
     "youch-terminal": "^1.1.1"
   },
   "dependencies": {
-    "@adonisjs/core": "^5.3.0",
+    "@adonisjs/core": "^5.3.4",
     "@adonisjs/lucid": "^16.0.2",
+    "@adonisjs/mail": "^7.2.4",
     "@adonisjs/repl": "^3.1.0",
+    "@adonisjs/view": "^6.1.1",
+    "crypto": "^1.0.1",
+    "jsonwebtoken": "^8.5.1",
+    "moment": "^2.29.1",
     "pg": "^8.7.1",
     "proxy-addr": "^2.0.7",
     "reflect-metadata": "^0.1.13",

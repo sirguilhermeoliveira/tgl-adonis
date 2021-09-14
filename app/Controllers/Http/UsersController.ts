@@ -7,13 +7,23 @@ export default class UsersController {
     return response.json(users);
   }
 
+  /*   public async store({ request }: HttpContextContract) {
+    console.log(request);
+    const data = request.only(["username", "email", "password"]);
+    console.log(data);
+    const user = await User.create(data);
+    return user;
+  } */
+
   public async store({ request, response }: HttpContextContract) {
     const { username, email, password } = request.all();
     const user = new User();
     user.username = username;
     user.email = email;
     user.password = password;
-
+    console.log(user);
+    console.log(request);
+    console.log(response);
     await user.save();
     return response.json(user.$isPersisted);
   }

@@ -1,6 +1,5 @@
 import { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import Bet from "App/Models/Bet";
-//id game_id game_numbers
 export default class BetsController {
   public async index({ response }: HttpContextContract) {
     const bets = await Bet.all();
