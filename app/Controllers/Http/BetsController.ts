@@ -1,6 +1,7 @@
 import { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import Bet from "App/Models/Bet";
 import User from "App/Models/User";
+import Game from "App/Models/Game";
 import Mail from "@ioc:Adonis/Addons/Mail";
 export default class BetsController {
   public async index({ response }: HttpContextContract) {
@@ -12,14 +13,17 @@ export default class BetsController {
     const { game_numbers } = request.all();
     const bet = new Bet();
     const user = await User.firstOrFail(params.user_id);
+    const game = await Game.firstOrFail(params.game_id);
     bet.game_numbers = game_numbers;
+    bet.game_id = game.id;
+    bet.user_id = user.id;
     await bet.save();
     await Mail.send((message) => {
       message
         .to(user.email)
         .from("sirguilhermeoliveira@gmail.com")
         .subject("New Account")
-        .htmlView("emails/new_users");
+        .htmlView("emails/new_bets");
     });
     return response.json(bet.$isPersisted);
   }
