@@ -4,6 +4,7 @@ import { DateTime } from "luxon";
 import Mail from "@ioc:Adonis/Addons/Mail";
 const crypto = require("crypto");
 const moment = require("moment");
+import { schema, validator, rules } from "@ioc:Adonis/Core/Validator";
 
 export default class ForgotPasswordsController {
   public async store({ request, response }: HttpContextContract) {
@@ -48,6 +49,18 @@ export default class ForgotPasswordsController {
           .status(401)
           .send({ error: { message: "The token has expired." } });
       }
+
+      const userSchema = schema.create({
+        password: schema.string({}, [rules.minLength(6)]),
+      });
+
+      await validator.validate({
+        schema: userSchema,
+        data: { password },
+        messages: {
+          "password.minLength": "Password need 6 characters minimum.",
+        },
+      });
 
       user.reset_token = "";
       user.password = password;

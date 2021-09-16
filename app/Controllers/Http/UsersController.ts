@@ -1,6 +1,7 @@
 import { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import User from "App/Models/User";
 import Mail from "@ioc:Adonis/Addons/Mail";
+import { schema, validator, rules } from "@ioc:Adonis/Core/Validator";
 
 export default class UsersController {
   public async index({ response }: HttpContextContract) {
@@ -14,6 +15,23 @@ export default class UsersController {
     user.username = username;
     user.email = email;
     user.password = password;
+
+    const userSchema = schema.create({
+      username: schema.string({}, [rules.required()]),
+      email: schema.string({}, [rules.email()]),
+      password: schema.string({}, [rules.minLength(6)]),
+    });
+
+    await validator.validate({
+      schema: userSchema,
+      data: { username, email, password },
+      messages: {
+        "username.required": "Username is required",
+        "email.email": "You have to use a valid email",
+        "password.minLength": "Password need 6 characters minimum.",
+      },
+    });
+
     await user.save();
     await Mail.send((message) => {
       message
@@ -33,10 +51,27 @@ export default class UsersController {
 
   public async update({ params, request, response }: HttpContextContract) {
     const { id } = params;
-    const { username, password } = request.all();
+    const { username, password, email } = request.all();
     const user = await User.findOrFail(id);
+
+    const userSchema = schema.create({
+      username: schema.string({}, [rules.required()]),
+      email: schema.string({}, [rules.email()]),
+      password: schema.string({}, [rules.minLength(6)]),
+    });
+
+    await validator.validate({
+      schema: userSchema,
+      data: { username, email, password },
+      messages: {
+        "username.required": "Username is required",
+        "email.email": "You have to use a valid email",
+        "password.minLength": "Password need 6 characters minimum.",
+      },
+    });
+
     user.username = username || user.username;
-    user.email = user.email || user.email;
+    user.email = email || user.email;
     user.password = password || user.password;
 
     await user.save();

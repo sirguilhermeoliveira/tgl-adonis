@@ -3,6 +3,7 @@ import Bet from "App/Models/Bet";
 import User from "App/Models/User";
 import Game from "App/Models/Game";
 import Mail from "@ioc:Adonis/Addons/Mail";
+import { schema, validator, rules } from "@ioc:Adonis/Core/Validator";
 export default class BetsController {
   public async index({ response }: HttpContextContract) {
     const bets = await Bet.all();
@@ -17,6 +18,19 @@ export default class BetsController {
     bet.game_numbers = game_numbers;
     bet.game_id = game.id;
     bet.user_id = user.id;
+
+    const betSchema = schema.create({
+      game_numbers: schema.string({}, [rules.required()]),
+    });
+
+    await validator.validate({
+      schema: betSchema,
+      data: { game_numbers },
+      messages: {
+        "game_numbers.required": "Game Numbers are required",
+      },
+    });
+
     await bet.save();
     await Mail.send((message) => {
       message
