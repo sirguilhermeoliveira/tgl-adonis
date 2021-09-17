@@ -1,51 +1,68 @@
 import { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import Bet from "App/Models/Bet";
 import User from "App/Models/User";
-import Game from "App/Models/Game";
 import Mail from "@ioc:Adonis/Addons/Mail";
 import { schema, validator, rules } from "@ioc:Adonis/Core/Validator";
 export default class BetsController {
-  public async index({ response }: HttpContextContract) {
-    const bets = await Bet.all();
-    return response.json(bets);
+  public async index({ params }: HttpContextContract) {
+    let bets;
+    bets = await Bet.query()
+      .where("user_id", params.user_id)
+      .preload("user")
+      .preload("game");
+    console.log(bets);
+    return bets;
   }
 
   public async store({ params, request, response }: HttpContextContract) {
-    const { game_numbers } = request.all();
-    const bet = new Bet();
-    const user = await User.firstOrFail(params.user_id);
-    const game = await Game.firstOrFail(params.game_id);
-    bet.game_numbers = game_numbers;
-    bet.game_id = game.id;
-    bet.user_id = user.id;
+    const user = await User.findOrFail(params.user_id);
+
+    const data = request.only(["bets"]);
 
     const betSchema = schema.create({
+      game_id: schema.number([rules.required()]),
       game_numbers: schema.string({}, [rules.required()]),
     });
 
-    await validator.validate({
-      schema: betSchema,
-      data: { game_numbers },
-      messages: {
-        "game_numbers.required": "Game Numbers are required",
-      },
+    data.bets.forEach(async (data) => {
+      try {
+        await validator.validate({
+          schema: betSchema,
+          data,
+          messages: {
+            "game_id.required": "Game Id is required",
+            "game_numbers.required": "Game Numbers is required",
+          },
+        });
+      } catch (error) {
+        return response.status(400).send({ error });
+      }
     });
 
-    await bet.save();
+    data.bets.forEach(async (data) => {
+      try {
+        await Bet.create({ ...data, user_id: params.user_id });
+      } catch (error) {
+        return response.status(400).send({ error });
+      }
+    });
+
     await Mail.send((message) => {
       message
         .to(user.email)
         .from("sirguilhermeoliveira@gmail.com")
-        .subject("New Account")
+        .subject("New Bet")
         .htmlView("emails/new_bets");
     });
-    return response.json(bet.$isPersisted);
+    return response.status(200).send({ message: "bet saved successfully" });
   }
 
-  public async show({ params, response }: HttpContextContract) {
-    const { id } = params;
-    const bet = await Bet.find(id);
-    return response.json(bet);
+  public async show({ params }: HttpContextContract) {
+    const bet = await Bet.query()
+      .where("id", params.id)
+      .preload("user")
+      .preload("game");
+    return bet;
   }
 
   public async update({ params, request, response }: HttpContextContract) {

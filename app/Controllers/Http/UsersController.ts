@@ -55,17 +55,21 @@ export default class UsersController {
     const user = await User.findOrFail(id);
 
     const userSchema = schema.create({
-      username: schema.string({}, [rules.required()]),
-      email: schema.string({}, [rules.email()]),
-      password: schema.string({}, [rules.minLength(6)]),
+      username: schema.string.optional({}, [rules.minLength(3)]),
+      email: schema.string.optional({}, [
+        rules.email(),
+        rules.unique({ table: "users", column: "email" }),
+      ]),
+      password: schema.string.optional({}, [rules.minLength(6)]),
     });
 
     await validator.validate({
       schema: userSchema,
       data: { username, email, password },
       messages: {
-        "username.required": "Username is required",
+        "username.minLength": "Username need 3 character minimum",
         "email.email": "You have to use a valid email",
+        "email.unique": "Email already exists",
         "password.minLength": "Password need 6 characters minimum.",
       },
     });

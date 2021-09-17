@@ -35,6 +35,7 @@ export default class AuthController {
 
     return {
       token,
+      user_id: userAlreadyExists.id,
     };
   }
 }
