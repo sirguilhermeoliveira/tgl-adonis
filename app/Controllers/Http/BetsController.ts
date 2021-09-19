@@ -4,12 +4,15 @@ import User from "App/Models/User";
 import Mail from "@ioc:Adonis/Addons/Mail";
 import { schema, validator, rules } from "@ioc:Adonis/Core/Validator";
 export default class BetsController {
-  public async index({ params }: HttpContextContract) {
-    let bets;
-    bets = await Bet.query()
+  public async index({ params, request }: HttpContextContract) {
+    const page = request.input("page", 1);
+    const limit = 10;
+    const bets = await Bet.query()
       .where("user_id", params.user_id)
       .preload("user")
-      .preload("game");
+      .preload("game")
+      .paginate(page, limit);
+
     return bets;
   }
 
