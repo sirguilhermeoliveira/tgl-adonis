@@ -10,7 +10,6 @@ export default class BetsController {
       .where("user_id", params.user_id)
       .preload("user")
       .preload("game");
-    console.log(bets);
     return bets;
   }
 
@@ -54,7 +53,7 @@ export default class BetsController {
         .subject("New Bet")
         .htmlView("emails/new_bets");
     });
-    return response.status(200).send({ message: "bet saved successfully" });
+    return response.status(200).send("Bet added with sucess!");
   }
 
   public async show({ params }: HttpContextContract) {
