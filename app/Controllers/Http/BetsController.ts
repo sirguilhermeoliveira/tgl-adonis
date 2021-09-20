@@ -6,12 +6,23 @@ import { schema, validator, rules } from "@ioc:Adonis/Core/Validator";
 export default class BetsController {
   public async index({ params, request }: HttpContextContract) {
     const page = request.input("page", 1);
+    const filter = request.input("filter");
     const limit = 10;
-    const bets = await Bet.query()
-      .where("user_id", params.user_id)
-      .preload("user")
-      .preload("game")
-      .paginate(page, limit);
+    let bets;
+    if (filter === String(0)) {
+      bets = await Bet.query()
+        .where("user_id", params.user_id)
+        .preload("user")
+        .preload("game")
+        .paginate(page, limit);
+    } else {
+      bets = await Bet.query()
+        .where("user_id", params.user_id)
+        .where("game_id", Number(filter))
+        .preload("user")
+        .preload("game")
+        .paginate(page, limit);
+    }
 
     return bets;
   }
