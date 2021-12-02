@@ -1,23 +1,24 @@
-# tgl-adonis
+# Content
 
-TGL backend em AdonisJS
+#TGL backend in AdonisJS
 
-Requisitos Não Funcionais
-RNF01. Construir toda aplicação utilizando Adonis JS
+#Non-Functional Requirements
 
-     RNF02. Construir banco de dados com base no JSON (módulo anterior)
+     RNF01. Build every application using Adonis JS
 
-     RNF03. Utilizar validators
+     RNF02. Build database based on JSON (previous sended)
 
-Requisitos Funcionais
-RF01. Disparar email para novos usuários, recuperação de senha e novas apostas (mailtrap)
+     RNF03. Use validators
 
-     RF02. Login com JWT
+#Functional Requirements
 
-     RF03. CRUD de usuários
+     RF01. Send email to new users, password recovery and new bets (mailtrap)
 
-     RF04.CRUD de jogos
+     RF02. Login with JWT
 
-     RF05. CRUD de apostas
+     RF03. CRUD of users
 
-Observação: deve-se construir uma collection no insomnia para ser compartilhado.
+     RF04.CRUD of games
+
+     RF05. CRUD of bets
+
