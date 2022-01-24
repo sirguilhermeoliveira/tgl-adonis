@@ -1,29 +1,29 @@
 import { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
-import User from "App/Models/User";
+import Admin from "App/Models/Admin";
 import Mail from "@ioc:Adonis/Addons/Mail";
 import { schema, validator, rules } from "@ioc:Adonis/Core/Validator";
 
-export default class UsersController {
+export default class AdminsController {
   public async index({ response }: HttpContextContract) {
-    const users = await User.all();
+    const users = await Admin.all();
     return response.json(users);
   }
 
   public async store({ request, response }: HttpContextContract) {
     const { username, email, password } = request.all();
-    const user = new User();
-    user.username = username;
-    user.email = email;
-    user.password = password;
+    const admin = new Admin();
+    admin.username = username;
+    admin.email = email;
+    admin.password = password;
 
-    const userSchema = schema.create({
+    const adminSchema = schema.create({
       username: schema.string({}, [rules.required()]),
       email: schema.string({}, [rules.email()]),
       password: schema.string({}, [rules.minLength(6)]),
     });
 
     await validator.validate({
-      schema: userSchema,
+      schema: adminSchema,
       data: { username, email, password },
       messages: {
         "username.required": "Username is required",
@@ -32,29 +32,29 @@ export default class UsersController {
       },
     });
 
-    await user.save();
+    await admin.save();
     await Mail.sendLater((message) => {
       message
-        .to(user.email)
+        .to(admin.email)
         .from("sirguilhermeoliveira@gmail.com")
-        .subject("New Account")
-        .htmlView("emails/new_users");
+        .subject("New Admin")
+        .htmlView("emails/new_admins");
     });
-    return response.json(user.$isPersisted);
+    return response.json(admin.$isPersisted);
   }
 
   public async show({ params, response }: HttpContextContract) {
     const { id } = params;
-    const user = await User.find(id);
-    return response.json(user);
+    const admin = await Admin.find(id);
+    return response.json(admin);
   }
 
   public async update({ params, request, response }: HttpContextContract) {
     const { id } = params;
     const { username, password, email } = request.all();
-    const user = await User.findOrFail(id);
+    const admin = await Admin.findOrFail(id);
 
-    const userSchema = schema.create({
+    const adminSchema = schema.create({
       username: schema.string.optional({}, [rules.minLength(3)]),
       email: schema.string.optional({}, [
         rules.email(),
@@ -64,7 +64,7 @@ export default class UsersController {
     });
 
     await validator.validate({
-      schema: userSchema,
+      schema: adminSchema,
       data: { username, email, password },
       messages: {
         "username.minLength": "Username need 3 character minimum",
@@ -74,19 +74,19 @@ export default class UsersController {
       },
     });
 
-    user.username = username || user.username;
-    user.email = email || user.email;
-    user.password = password || user.password;
+    admin.username = username || admin.username;
+    admin.email = email || admin.email;
+    admin.password = password || admin.password;
 
-    await user.save();
-    return response.json(user);
+    await admin.save();
+    return response.json(admin);
   }
 
   public async destroy({ params, response }: HttpContextContract) {
     const { id } = params;
-    const user = await User.findOrFail(id);
+    const admin = await Admin.findOrFail(id);
 
-    await user.delete();
+    await admin.delete();
     return response.status(204);
   }
 }
