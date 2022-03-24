@@ -16,7 +16,7 @@
 
 #Functional Requirements
 
-     RF01. Send email to new users, password recovery and new bets (mailtrap)
+     RF01. Microservice with Kafka and express in email to new users, password recovery and new bets (mailtrap)
 
      RF02. Login with JWT
 
